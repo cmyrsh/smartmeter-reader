@@ -1,0 +1,102 @@
+[
+    {
+        "id": "d591e15f.45b73",
+        "type": "tab",
+        "label": "smartmeter2graphite_v2"
+    },
+    {
+        "id": "ecfa1132.71a5",
+        "type": "mqtt in",
+        "z": "d591e15f.45b73",
+        "name": "smartmeter",
+        "topic": "hs/106/meter",
+        "qos": "1",
+        "broker": "329da88d.772958",
+        "x": 75,
+        "y": 144,
+        "wires": [
+            [
+                "7d64f036.8e0248"
+            ]
+        ]
+    },
+    {
+        "id": "7d64f036.8e0248",
+        "type": "json",
+        "z": "d591e15f.45b73",
+        "name": "parse_payload",
+        "x": 186,
+        "y": 57,
+        "wires": [
+            [
+                "1be3c772.fc8109"
+            ]
+        ]
+    },
+    {
+        "id": "1be3c772.fc8109",
+        "type": "function",
+        "z": "d591e15f.45b73",
+        "name": "flatten_telegram",
+        "func": "// get local offset\nvar localoffset = new Date().getTimezoneOffset()\n// init output array\nvar output_data = [];\n\nvar telegrams = msg.payload\n\n// Loop over Telegram Messages\nfor (var tvar in telegrams) {\n    // calculate local unix timestamp\n    var t = telegrams[tvar]\n    var unixtime_parsed_e = new Date(t.Date_timestamp).getTime()/1000\n    var unixtime_e = unixtime_parsed_e + (localoffset * 60)\n    \n    // Extract values (Electricity Data)\n    var eit1_kwh = {'time':unixtime_e, 'name':'Electricity_incoming_tarfif1_kwh','value':t.Electricity_incoming_tarfif1_kwh}\n    var eit2_kwh = {'time':unixtime_e, 'name':'Electricity_incoming_tarfif2_kwh', 'value':t.Electricity_incoming_tarfif2_kwh}\n    var ap_kw = {'time':unixtime_e, 'name':'Actualpower_incoming_kW', 'value':t.Actualpower_incoming_kW}\n    var i_ca = {'time':unixtime_e, 'name':'Instantaneous_current_amp', 'value':t.Instantaneous_current_amp}\n    \n    output_data.push({payload:eit1_kwh});\n    output_data.push({payload:eit2_kwh});\n    output_data.push({payload:ap_kw});\n    output_data.push({payload:i_ca});\n    \n    \n    // Loop over Gas data\n    var readings = t.Gas_readings\n    for (var gr_var in readings) {\n        var gr = readings[gr_var]\n        var unixtime_parsed_g = new Date(gr.Capture_time).getTime()/1000\n        var unixtime_g = unixtime_parsed_g + (localoffset * 60)\n        \n        var gas_data = {'time':unixtime_g, 'name':'Value_m3','value':gr.Value_m3}\n        \n        output_data.push({payload:gas_data});\n    }    \n}\nreturn [ output_data ];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 307,
+        "y": 136,
+        "wires": [
+            [
+                "dceb1f9d.2493c8"
+            ]
+        ]
+    },
+    {
+        "id": "dceb1f9d.2493c8",
+        "type": "function",
+        "z": "d591e15f.45b73",
+        "name": "build_graphite_data",
+        "func": "var outputMsgs = [];\nvar text = \"smartmeter.\" + msg.payload.name + \" \" + msg.payload.value + \" \" + msg.payload.time + \"\\n\"\noutputMsgs.push({payload:text});\nreturn outputMsgs;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 432,
+        "y": 50,
+        "wires": [
+            [
+                "a1a008b5.798de"
+            ]
+        ]
+    },
+    {
+        "id": "a1a008b5.798de",
+        "type": "tcp out",
+        "z": "d591e15f.45b73",
+        "host": "graphite",
+        "port": "2003",
+        "beserver": "client",
+        "base64": false,
+        "end": false,
+        "name": "send2graphite",
+        "x": 572,
+        "y": 132,
+        "wires": []
+    },
+    {
+        "id": "329da88d.772958",
+        "type": "mqtt-broker",
+        "z": "",
+        "broker": "192.168.1.2",
+        "port": "1883",
+        "clientid": "nodered-mtch",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "processors/nodered",
+        "willQos": "1",
+        "willRetain": "false",
+        "willPayload": "bye",
+        "birthTopic": "processors/nodered",
+        "birthQos": "1",
+        "birthRetain": "false",
+        "birthPayload": "hi"
+    }
+]
