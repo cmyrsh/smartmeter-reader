@@ -16,7 +16,9 @@ This module is a go program. It reads the P1 Telegram from smartmeter and create
 ### Building
 
 Serial Reader needs to be compiled for target platform. Following code builds for ARM devices (example: Raspberry Pi / C.H.I.P etc)
-`env GOARM=7;GOOS=linux;GOARCH=arm go build -v -o smartmeter_reader_arm`
+```{r, engine='bash', count_lines}
+env GOARM=7;GOOS=linux;GOARCH=arm go build -v -o smartmeter_reader_arm
+```
 
 ## Graphite Feeder
 This is a node in node-red. This node reads P1 JSON message from MQTT topic and extract Smartmeter data. Later it sends data to Graphite instance.
