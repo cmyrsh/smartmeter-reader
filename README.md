@@ -4,6 +4,10 @@ This project houses code used to read standard smartmeter in Netherlands.
 # Introduction
 If you stay in Netherlands, then your energy provider has propbably installed new smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. This repo has code to send the data to Graphite database via MQTT server.
 
+The diagram shows high level picture of how the code is deployed
+
+![alt text](https://github.com/cmyrsh/smartmeter-reader/smartmeter_reader.jpg "Diagram")
+
 The repo contains 2 modules, Serial Reader and Graphite Feeder
 
 ## Serial Reader
