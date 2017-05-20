@@ -6,7 +6,7 @@ If you stay in Netherlands, then your energy provider has propbably installed ne
 
 The diagram shows high level picture of how the code is deployed
 
-![alt text](https://github.com/cmyrsh/smartmeter-reader/smartmeter_reader.jpg "Diagram")
+![alt text](https://github.com/cmyrsh/smartmeter-reader/blob/master/smartmeter_reader.jpg "Diagram")
 
 The repo contains 2 modules, Serial Reader and Graphite Feeder
 
