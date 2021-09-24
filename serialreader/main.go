@@ -1,11 +1,13 @@
 package main
 
 import (
-	"sync"
-	"./datamodel"
 	"flag"
+	"sync"
+
+	"./mqttadapterY"
+
+	"./datamodel"
 	"./serialport"
-	"./mqttadaper"
 )
 
 const (
@@ -32,9 +34,8 @@ func main() {
 
 	go serialport.ReadSerial(usb_port, telegram_channel, wg)
 
-	go mqttadapter.MQTTy(mqtt_address, "smartmeter-reader", mqtt_topic, telegram_channel, wg, interval)
+	go mqttadapterY.MQTTy(mqtt_address, "smartmeter-reader", mqtt_topic, telegram_channel, wg, interval)
 
 	wg.Wait()
-
 
 }
