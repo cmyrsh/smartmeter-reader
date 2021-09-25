@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/magiconair/properties"
+
 	"../datamodel"
 
 	//import the Paho Go MQTT library
@@ -21,12 +23,21 @@ var (
 	osname, _ = os.Hostname()
 )
 
+const LOG_INTERVAL = 3600 * 1000
+
 func buildClient(mqtt_url string, clientid string, username string, password string, topic string) MQTT.Client {
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker(mqtt_url)
 	opts.SetClientID(fmt.Sprintf("%s@%s", clientid, osname))
-	opts.SetUsername(username)
-	opts.SetPassword(password)
+	if len(username) > 0 {
+		opts.SetUsername(username)
+		if len(password) > 0 {
+			opts.SetPassword(password)
+		} else {
+			log.Fatal("Password not provided for username")
+		}
+	}
+
 	opts.SetWill(fmt.Sprintf("will:%s", topic), "GoingDown", 1, false)
 	opts.SetCleanSession(true)
 
@@ -44,7 +55,18 @@ func buildClient(mqtt_url string, clientid string, username string, password str
 	return client
 }
 
-func MQTTy(mqtt_url string, clientid string, topic string, data_channel <-chan datamodel.P1Telegram, wg sync.WaitGroup, secs int) {
+func getcredentials(cred_file string) (user, pass string) {
+
+	if len(cred_file) > 0 {
+		p := properties.MustLoadFile(cred_file, properties.UTF8)
+
+		return p.MustGetString("user"), p.MustGetString("password")
+	}
+
+	return "", ""
+}
+
+func MQTTy(mqtt_url string, clientid string, topic string, cred_file string, data_channel <-chan datamodel.P1Telegram, wg sync.WaitGroup, secs int) {
 
 	defer wg.Done()
 	/*
@@ -57,13 +79,18 @@ func MQTTy(mqtt_url string, clientid string, topic string, data_channel <-chan d
 	//create a ClientOptions struct setting the broker address, clientid, turn
 	//off trace output and set the default message handler
 	//create and start a client using the above ClientOptions
-	c1 := buildClient(mqtt_url, clientid, "", "", topic)
+
+	usr, psswd := getcredentials(cred_file)
+
+	c1 := buildClient(mqtt_url, clientid, usr, psswd, topic)
 
 	defer c1.Disconnect(uint(secs))
 
-	log.Println("Created MQTT Client")
+	log.Println(fmt.Sprintf("Connected to MQTT Server %s with ClientId %s", mqtt_url, clientid))
 
 	ticker := time.NewTicker(time.Duration(secs) * time.Second)
+
+	log_threshhold := time.Now()
 
 	for t := range ticker.C {
 
@@ -91,8 +118,9 @@ func MQTTy(mqtt_url string, clientid string, topic string, data_channel <-chan d
 				//log.Println("waiting for token")
 				if token.Wait() && token.Error() != nil {
 					log.Panic(token.Error())
-				} else {
+				} else if t.UnixMilli()-LOG_INTERVAL > log_threshhold.UnixMilli() {
 					log.Printf("published messages: %d size: %d", arr_len, len(telegram_json))
+					log_threshhold = t
 				}
 
 			} else {
@@ -103,7 +131,6 @@ func MQTTy(mqtt_url string, clientid string, topic string, data_channel <-chan d
 			log.Println("no msg")
 		}
 
-		log.Printf("Time :%s", t)
 	}
 
 }
