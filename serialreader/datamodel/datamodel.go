@@ -2,7 +2,6 @@ package datamodel
 
 import (
 	"fmt"
-	//"log"
 	"log"
 	"regexp"
 	"strconv"
@@ -29,7 +28,7 @@ A-B:C.D.E*F
 var (
 	p_version = regexp.MustCompile("1-3:0\\.2\\.8\\(|\\)")
 
-	p_timestamp  = regexp.MustCompile("0-0:1\\.0\\.0\\(|\\)")
+	p_timestamp  = regexp.MustCompile("0-0:1\\.0\\.0\\(|(S|W)\\)")
 	p_equip_id   = regexp.MustCompile("0-0:96\\.1\\.1\\(|\\)")
 	p_eto_trf1   = regexp.MustCompile("1-0:1\\.8\\.1\\(|\\)")
 	p_efrom_trf1 = regexp.MustCompile("1-0:2\\.8\\.1\\(|\\)")
@@ -73,13 +72,13 @@ var (
 
 	ampremove = regexp.MustCompile("\\*A")
 
-	gasreader_date_layout = "060102150405S"
+	gasreader_date_layout = "060102150405"
 
 	gasreader_unit_length = 4
 
 	powerfailure_unit_length = 8
 
-	powerfailure_date_layout = "060102150405W"
+	powerfailure_date_layout = "060102150405"
 )
 
 const (
@@ -192,7 +191,7 @@ type P1Telegram struct {
 
 func (target *P1Telegram) PopulateFromLine(data string) error {
 	str_e := strings.TrimSpace(data)
-	//log.Println(str_e)
+	log.Println(str_e)
 	if strings.HasPrefix(str_e, "/") {
 		target.Manufacture_spec = strings.TrimPrefix(str_e, "/")
 		return nil
@@ -307,7 +306,6 @@ func (target *P1Telegram) PopulateFromLine(data string) error {
 
 	return nil
 }
-
 
 func extractGasReadings(data_raw string) ([]GasReading, error) {
 
