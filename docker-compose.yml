@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mqtt-mtch:
+    container_name: smartmeter-reader
+    image: myrsh/smartmeter-reader
+    restart: unless-stopped
+    # user: "{{ user.uid }}:{{ user.gid }}"
+    volumes:
+      - ~/smartmeter-reader/config:/config:ro
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    network_mode: "host"
+
+   
+# docker run -d -p 31883:1883 -p 39001:9001 --name mqtt-mtch -v {{ paths.data }}/mosquitto/config:/mosquitto/config -v {{ paths.data }}/mosquitto/data:/mosquitto/data -v {{ paths.data }}/mosquitto/log:/mosquitto/log eclipse-mosquitto

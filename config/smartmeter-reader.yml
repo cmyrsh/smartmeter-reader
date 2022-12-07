@@ -1,0 +1,7 @@
+send_interval: 60 # Seconds
+debug: true
+usb: /dev/ttyUSB0
+mqtt:
+  address: "localhost:1883"
+  topic: "dev.sample.topic"
+  # credfile: ""

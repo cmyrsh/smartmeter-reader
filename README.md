@@ -7,8 +7,7 @@ If you stay in the Netherlands, then your energy provider has propbably installe
 This repo has 
 
 The diagram shows high level picture of how the code is deployed
-<!-- 
-![alt text](https://github.com/cmyrsh/smartmeter-reader/blob/master/smartmeter_reader.jpg "Diagram") -->
+
 
 ```mermaid
  flowchart LR
@@ -21,8 +20,10 @@ The diagram shows high level picture of how the code is deployed
 
 ## Serial Reader
 This module is a go program. It reads the P1 Telegram from smartmeter and creates a JSON message. After creating the message, it will send it to MQTT server.
+### Datagram Schema
+FYR https://www.netbeheernederland.nl/_upload/Files/Slimme_meter_15_32ffe3cc38.pdf
 
-### Building
+## Building
 
 Serial Reader needs to be compiled for target platform. Following code builds for ARM devices (example: Raspberry Pi / C.H.I.P etc)
 ```{r, engine='bash', count_lines}
@@ -33,12 +34,12 @@ To compile on Linux we use
 ./build_linux.sh
 ```
 
-### Running
+## Running
 To know all options, run 
 ```{r, engine='bash', count_lines}
 smartmeter_reader_arm -h
 ```
-#### Options
+### Options
 ```{r, engine='bash', count_lines}
 Usage of ./smartmeter_reader_arm:
   -interval int

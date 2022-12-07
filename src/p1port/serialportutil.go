@@ -16,7 +16,7 @@ const (
 	BAUD_RATE int = 115200
 )
 
-func ReadSerial(usb_port string, channel_telegram chan<- datamodel.P1Telegram, wg sync.WaitGroup) {
+func ReadSerial(usb_port string, channel_telegram chan<- datamodel.P1Telegram, wg sync.WaitGroup, debug bool) {
 	defer wg.Done()
 
 	config := &serial.Config{}
@@ -59,7 +59,7 @@ func ReadSerial(usb_port string, channel_telegram chan<- datamodel.P1Telegram, w
 			telegram = new(datamodel.P1Telegram)
 		} else if nil != telegram {
 
-			telegram.PopulateFromLine(linex)
+			telegram.PopulateFromLine(linex, debug)
 		}
 	}
 

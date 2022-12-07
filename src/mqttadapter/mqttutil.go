@@ -55,8 +55,10 @@ func buildClient(mqtt_url string, clientid string, username string, password str
 }
 
 func getcredentials(cred_file string) (user, pass string) {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	if len(cred_file) > 0 {
+
 		p := properties.MustLoadFile(cred_file, properties.UTF8)
 
 		return p.MustGetString("user"), p.MustGetString("password")
@@ -68,13 +70,7 @@ func getcredentials(cred_file string) (user, pass string) {
 func Start(mqtt_url string, clientid string, topic string, cred_file string, data_channel <-chan datamodel.P1Telegram, wg sync.WaitGroup, secs int) {
 
 	defer wg.Done()
-	/*
-		var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
-			log.Printf("TOPIC: %s\n", msg.Topic())
-			log.Printf("MSG: %s\n", msg.Payload())
-		}
-		opts.SetDefaultPublishHandler(f)
-	*/
+
 	//create a ClientOptions struct setting the broker address, clientid, turn
 	//off trace output and set the default message handler
 	//create and start a client using the above ClientOptions
@@ -85,7 +81,7 @@ func Start(mqtt_url string, clientid string, topic string, cred_file string, dat
 
 	defer c1.Disconnect(uint(secs))
 
-	log.Println(fmt.Sprintf("Connected to MQTT Server %s with ClientId %s", mqtt_url, clientid))
+	log.Printf("Connected to MQTT Server %s with ClientId %s\n", mqtt_url, clientid)
 
 	ticker := time.NewTicker(time.Duration(secs) * time.Second)
 
@@ -97,6 +93,7 @@ func Start(mqtt_url string, clientid string, topic string, cred_file string, dat
 		var telegram_array []datamodel.P1Telegram
 
 		select {
+
 		case telegram := <-data_channel:
 			// if message found in channel then push the message to slice
 			telegram_array = append(telegram_array, telegram)

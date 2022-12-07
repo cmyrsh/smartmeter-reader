@@ -51,7 +51,17 @@ var (
 	p_txt_msgcoder = regexp.MustCompile("0-0:96\\.13\\.1\\(|\\)")
 	p_txt_msgmax   = regexp.MustCompile("0-0:96\\.13\\.0\\(|\\)")
 
-	p_inst_curr = regexp.MustCompile("1-0:31\\.7\\.0\\(|\\)")
+	p_inst_curr_l1 = regexp.MustCompile("1-0:31\\.7\\.0\\(|\\)")
+	p_inst_curr_l2 = regexp.MustCompile("1-0:51\\.7\\.0\\(|\\)")
+	p_inst_curr_l3 = regexp.MustCompile("1-0:71\\.7\\.0\\(|\\)")
+
+	p_inst_pow_in_l1 = regexp.MustCompile("1-0:21\\.7\\.0\\(|\\)")
+	p_inst_pow_in_l2 = regexp.MustCompile("1-0:41\\.7\\.0\\(|\\)")
+	p_inst_pow_in_l3 = regexp.MustCompile("1-0:61\\.7\\.0\\(|\\)")
+
+	p_inst_pow_out_l1 = regexp.MustCompile("1-0:22\\.7\\.0\\(|\\)")
+	p_inst_pow_out_l2 = regexp.MustCompile("1-0:42\\.7\\.0\\(|\\)")
+	p_inst_pow_out_l3 = regexp.MustCompile("1-0:62\\.7\\.0\\(|\\)")
 
 	p_inst_activepwr_in  = regexp.MustCompile("1-0:21\\.17\\.0\\(|\\)")
 	p_inst_activepwr_out = regexp.MustCompile("1-0:22\\.17\\.0\\(|\\)")
@@ -107,7 +117,17 @@ const (
 	const_p_txt_msgcoder = "0-0:96.13.1"
 	const_p_txt_msgmax   = "0-0:96.13.0"
 
-	const_p_inst_curr = "1-0:31.7.0"
+	const_p_inst_curr_l1 = "1-0:31.7.0"
+	const_p_inst_curr_l2 = "1-0:51.7.0"
+	const_p_inst_curr_l3 = "1-0:71.7.0"
+
+	const_p_inst_pow_in_l1 = "1-0:21.7.0"
+	const_p_inst_pow_in_l2 = "1-0:41.7.0"
+	const_p_inst_pow_in_l3 = "1-0:61.7.0"
+
+	const_p_inst_pow_out_l1 = "1-0:22.7.0"
+	const_p_inst_pow_out_l2 = "1-0:42.7.0"
+	const_p_inst_pow_out_l3 = "1-0:62.7.0"
 
 	const_p_inst_activepwr_in  = "1-0:21.17.0"
 	const_p_inst_activepwr_out = "1-0:22.17.0"
@@ -144,13 +164,21 @@ type P1Telegram struct {
 	Tarrif_id                             string
 	Actualpower_incoming_kW               float64
 	Actualpower_outgoing_kW               float64
+	InstantaneousPower_incoming_L1_kW     float64
+	InstantaneousPower_incoming_L2_kW     float64
+	InstantaneousPower_incoming_L3_kW     float64
+	InstantaneousPower_outgoing_L1_kW     float64
+	InstantaneousPower_outgoing_L2_kW     float64
+	InstantaneousPower_outgoing_L3_kW     float64
 	Power_failure_count                   int64
 	Power_failure_history                 []PowerFailure
 	L1_voltage_sag_count                  int64
 	L1_voltage_swell_count                int64
 	Text_msg                              string
 	Text_msg_maxchars                     int64
-	Instantaneous_current_amp             float64
+	Instantaneous_current_l1_amp          float64
+	Instantaneous_current_l2_amp          float64
+	Instantaneous_current_l3_amp          float64
 	Instantaneous_activepower_incoming_kW float64
 	Instantaneous_activepower_outgoing_kW float64
 	Gas_device_type                       string
@@ -189,9 +217,12 @@ type P1Telegram struct {
 	*/
 }
 
-func (target *P1Telegram) PopulateFromLine(data string) error {
+func (target *P1Telegram) PopulateFromLine(data string, debug bool) error {
 	str_e := strings.TrimSpace(data)
-	log.Println(str_e)
+	if debug {
+		log.Println(str_e)
+	}
+
 	if strings.HasPrefix(str_e, "/") {
 		target.Manufacture_spec = strings.TrimPrefix(str_e, "/")
 		return nil
@@ -240,8 +271,8 @@ func (target *P1Telegram) PopulateFromLine(data string) error {
 	if strings.HasPrefix(str_e, const_p_actpwr_to) {
 		target.Actualpower_incoming_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_actpwr_to.Split(str_e, -1)[1], ""), 0)
 		return nil
-
 	}
+
 	if strings.HasPrefix(str_e, const_p_actpwr_from) {
 		target.Actualpower_outgoing_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_actpwr_from.Split(str_e, -1)[1], ""), 0)
 		return nil
@@ -273,10 +304,44 @@ func (target *P1Telegram) PopulateFromLine(data string) error {
 		target.Text_msg_maxchars, _ = strconv.ParseInt(p_txt_msgmax.Split(str_e, -1)[1], 10, 0)
 		return nil
 	}
-	if strings.HasPrefix(str_e, const_p_inst_curr) {
-		target.Instantaneous_current_amp, _ = strconv.ParseFloat(ampremove.ReplaceAllString(p_inst_curr.Split(str_e, -1)[1], ""), 0)
+	if strings.HasPrefix(str_e, const_p_inst_curr_l1) {
+		target.Instantaneous_current_l1_amp, _ = strconv.ParseFloat(ampremove.ReplaceAllString(p_inst_curr_l1.Split(str_e, -1)[1], ""), 0)
 		return nil
 	}
+	if strings.HasPrefix(str_e, const_p_inst_curr_l2) {
+		target.Instantaneous_current_l2_amp, _ = strconv.ParseFloat(ampremove.ReplaceAllString(p_inst_curr_l2.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_curr_l3) {
+		target.Instantaneous_current_l3_amp, _ = strconv.ParseFloat(ampremove.ReplaceAllString(p_inst_curr_l3.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_pow_in_l1) {
+		target.InstantaneousPower_incoming_L1_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_in_l1.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_pow_in_l2) {
+		target.InstantaneousPower_incoming_L2_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_in_l2.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_pow_in_l3) {
+		target.InstantaneousPower_incoming_L3_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_in_l3.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+
+	if strings.HasPrefix(str_e, const_p_inst_pow_out_l1) {
+		target.InstantaneousPower_outgoing_L1_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_out_l1.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_pow_out_l2) {
+		target.InstantaneousPower_outgoing_L2_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_out_l2.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+	if strings.HasPrefix(str_e, const_p_inst_pow_out_l3) {
+		target.InstantaneousPower_outgoing_L3_kW, _ = strconv.ParseFloat(kWremove.ReplaceAllString(p_inst_pow_out_l3.Split(str_e, -1)[1], ""), 0)
+		return nil
+	}
+
 	if strings.HasPrefix(str_e, const_p_inst_activepwr_in) {
 		target.Instantaneous_activepower_incoming_kW, _ = strconv.ParseFloat(p_inst_activepwr_in.Split(str_e, -1)[1], 0)
 		return nil
