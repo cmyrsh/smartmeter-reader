@@ -2,26 +2,56 @@
 This project houses code used to read standard smartmeter in Netherlands.
 
 # Introduction
-If you stay in Netherlands, then your energy provider has propbably installed new smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. This repo has code to send the data to Graphite database via MQTT server.
+If you stay in the Netherlands, then your energy provider has propbably installed a smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. 
+
+This repo has 
 
 The diagram shows high level picture of how the code is deployed
 
-![alt text](https://github.com/cmyrsh/smartmeter-reader/blob/master/smartmeter_reader.jpg "Diagram")
 
-The repo contains 2 modules, Serial Reader and Graphite Feeder
+```mermaid
+ flowchart LR
+    SmartMeter(P1 Port of Smart Meter)
+    Pi(RaspBerry Pi USB Port)
+    MQTT(MQTT Server)
+    SmartMeter --> Pi
+    Pi -- Json --> MQTT
+```
 
 ## Serial Reader
 This module is a go program. It reads the P1 Telegram from smartmeter and creates a JSON message. After creating the message, it will send it to MQTT server.
+### Datagram Schema
+FYR https://www.netbeheernederland.nl/_upload/Files/Slimme_meter_15_32ffe3cc38.pdf
 
-### Building
+## Building
 
 Serial Reader needs to be compiled for target platform. Following code builds for ARM devices (example: Raspberry Pi / C.H.I.P etc)
 ```{r, engine='bash', count_lines}
-env GOARM=7;GOOS=linux;GOARCH=arm go build -v -o smartmeter_reader_arm
+./build_arm.sh
+```
+To compile on Linux we use 
+```{r, engine='bash', count_lines}
+./build_linux.sh
 ```
 
-## Graphite Feeder
-This is a node in node-red. This node reads P1 JSON message from MQTT topic and extract Smartmeter data. Later it sends data to Graphite instance.
-
+## Running
+To know all options, run 
+```{r, engine='bash', count_lines}
+smartmeter_reader_arm -h
+```
+### Options
+```{r, engine='bash', count_lines}
+Usage of ./smartmeter_reader_arm:
+  -interval int
+        message interval in seconds. default is 60 (default 60)
+  -mqtt_address string
+        MQTT Host and Port (default "localhost:1883")
+  -mqtt_cred_file string
+        path of mqtt cred file default is blank, file should be in properties format
+  -mqtt_topic string
+        Topic name where Serial data needs to be sent (default "dev.sample.topic")
+  -usb string
+        USB/Serial port (default "/dev/ttyUSB0")
+```
 
 
