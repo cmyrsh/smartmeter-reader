@@ -2,11 +2,9 @@
 This project houses code used to read standard smartmeter in Netherlands.
 
 # Introduction
-If you stay in the Netherlands, then your energy provider has propbably installed a smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. 
+If you stay in the Netherlands, then your energy provider has probably installed a smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. 
 
-This repo has 
-
-The diagram shows high level picture of how the code is deployed
+The diagram shows high level picture of how data is extracted from your SlimmeMeter.
 
 
 ```mermaid
@@ -128,7 +126,7 @@ Example [Yaml File](./config/smartmeter-reader.yml)
 
 ### Using Individual Parameter Flags
 We can also specify individual parameters instead of -config.
-Although -config will take precedence over other parameters and when specified other paramters are ignored.
+Although -config will take precedence over other parameters and when specified other parameters are ignored.
 Individual Params are
 ```
   -debug
