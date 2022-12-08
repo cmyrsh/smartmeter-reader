@@ -8,7 +8,7 @@ ENV GO111MODULE auto
 RUN mkdir bin && cd /smartmeter-reader/run && go build -v -o ../bin/smartmeter_reader
 
 FROM hypriot/rpi-alpine-scratch
-
+LABEL Maintainer="Mayuresh Chaubal myrsh@outlook.com"
 WORKDIR /app/
 COPY --from=builder /smartmeter-reader/bin/smartmeter_reader /app/
 VOLUME [ "/config" ]
