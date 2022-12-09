@@ -18,11 +18,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: "Build Arm"
-        id: latest_tag
+        id: build_arm
         run: ./build-arm.sh
       - name: "Build Linux"
-        id: latest_tag
+        id: build_linux
         run: ./build-linux.sh
       - name: "Build Docker"
-        id: latest_tag
+        id: build_docker
         run: 'docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader'        
