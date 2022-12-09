@@ -6,23 +6,18 @@ on:
     branches:
       - 'master'
 
-name: Build Binary
+name: Build
 
 jobs:
   build:
-    name: Create Go Binary
+    name: Build Binaries and Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
       - name: "Build Arm"
-        id: build_arm
         run: ./build-arm.sh
       - name: "Build Linux"
-        id: build_linux
         run: ./build-linux.sh
-      - name: "Build Docker"
-        id: build_docker
+      - name: "Build and Push Docker"
         run: "docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader"
