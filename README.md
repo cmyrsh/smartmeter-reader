@@ -1,5 +1,6 @@
 # smartmeter-reader
-This project houses code used to read standard smartmeter in Netherlands.
+
+Read data from your Smart Meter in Meter Kast. Using P1 Port to USB connecting wire, Raspberry Pi and this program.
 
 # Introduction
 If you stay in the Netherlands, then your energy provider has probably installed a smartmeter at your house. This smartmeter has a P1 port, using which you can extract energy readings (Electricity and Gas) every 10 seconds. The readings can be used further for your purpose. 
@@ -12,7 +13,7 @@ The diagram shows high level picture of how data is extracted from your SlimmeMe
     SmartMeter(P1 Port of Smart Meter)
     Pi(RaspBerry Pi USB Port)
     MQTT(MQTT Server)
-    SmartMeter --> Pi
+    SmartMeter -- P1Port to USB Cable --> Pi
     Pi -- Json --> MQTT
 ```
 
