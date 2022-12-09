@@ -16,8 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: "Build Arm"
-        run: ./build-arm.sh
+        run: ${{ github.workspace }}/build-arm.sh
       - name: "Build Linux"
-        run: ./build-linux.sh
+        run: ${{ github.workspace }}/build-linux.sh
       - name: "Build and Push Docker"
-        run: "docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader"
+        run: "cd ${{ github.workspace }} && docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader"
