@@ -25,4 +25,4 @@ jobs:
         run: ./build-linux.sh
       - name: "Build Docker"
         id: build_docker
-        run: 'docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader'        
+        run: "docker build -t myrsh/smartmeter-reader -f Dockerfile_arm . && docker login -u myrsh -p ${{ secrets.API_KEY_DOCKERHUB}} && docker push myrsh/smartmeter-reader"
