@@ -1,0 +1,779 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 2,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 10,
+        "panels": [],
+        "title": "Hourly",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "WGbJcwvVz"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisCenteredZero": false,
+              "axisColorMode": "series",
+              "axisGridShow": true,
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "stepAfter",
+              "lineStyle": {
+                "fill": "solid"
+              },
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyEUR"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Temperature"
+              },
+              "properties": [
+                {
+                  "id": "custom.axisPlacement",
+                  "value": "right"
+                },
+                {
+                  "id": "unit",
+                  "value": "celsius"
+                },
+                {
+                  "id": "custom.fillOpacity",
+                  "value": 16
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byFrameRefID",
+                "options": "D"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Total Cost"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 5,
+        "options": {
+          "legend": {
+            "calcs": [
+              "max"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": false
+          },
+          "timezone": [
+            ""
+          ],
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WGbJcwvVz"
+            },
+            "editorMode": "code",
+            "expr": "max(delta(energy_Gas_readings_0_Value_m3[1h])) * ($Gas_Rate + $Gas_Tax + $Gas_Tax_Surcharge) + ($Gas_Connection_Cost + $Gas_Delivery_Cost) / 24",
+            "instant": false,
+            "interval": "1h",
+            "legendFormat": "Gas Cost",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WGbJcwvVz"
+            },
+            "editorMode": "code",
+            "expr": "max(delta(energy_Electricity_incoming_tariff2_kwh[1h])) * ($Electricity_Normal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) + max(delta(energy_Electricity_incoming_tariff1_kwh[1h])) * ($Electricity_Dal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) +($Electricity_Delivery - $Energy_Tax_Reduction ) / 24",
+            "hide": false,
+            "instant": false,
+            "interval": "30m",
+            "legendFormat": "Electricity Cost",
+            "range": true,
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WGbJcwvVz"
+            },
+            "editorMode": "code",
+            "expr": "(max(delta(energy_Electricity_outgoing_tariff1_kwh[1h])) + max(delta(energy_Electricity_outgoing_tariff2_kwh[1h]))) * $Electricity_Return ",
+            "hide": false,
+            "instant": false,
+            "interval": "30m",
+            "legendFormat": "Electricity Cost",
+            "range": true,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "name": "Expression",
+              "type": "__expr__",
+              "uid": "__expr__"
+            },
+            "expression": "$A + $C - $B",
+            "hide": false,
+            "refId": "D",
+            "type": "math"
+          }
+        ],
+        "title": "Energy Usage Per Hour",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "WGbJcwvVz"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "calculation": "max",
+              "colorPalette": "interpolateSpectral",
+              "colorSpace": "rgb",
+              "groupBy": 60,
+              "invertPalette": true,
+              "nullValueColor": "rgb(155, 155, 155)"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyEUR"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 10
+        },
+        "id": 4,
+        "options": {
+          "from": "0",
+          "legendGradientQuality": "high",
+          "regions": [
+            {
+              "color": "#00000000",
+              "end": {
+                "hour": 24,
+                "minute": 0
+              },
+              "start": {
+                "hour": 20,
+                "minute": 30
+              }
+            }
+          ],
+          "showCellBorder": false,
+          "showLegend": true,
+          "showTooltip": true,
+          "showValueIndicator": false,
+          "timeFieldName": "Time",
+          "to": "0",
+          "valueFieldName": "Value"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WGbJcwvVz"
+            },
+            "editorMode": "code",
+            "expr": "max(delta(energy_Gas_readings_0_Value_m3[1h])) * ($Gas_Rate + $Gas_Tax + $Gas_Tax_Surcharge) + ($Gas_Connection_Cost + $Gas_Delivery_Cost) / 24",
+            "instant": false,
+            "legendFormat": "{{topic}}",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Gas Usage HeatMap Per Hour",
+        "type": "marcusolsson-hourly-heatmap-panel"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "WGbJcwvVz"
+        },
+        "description": "Normal Rate is  0.08591/kWh\nDalTariff is 0.07405/kWh",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "calculation": "max",
+              "colorPalette": "interpolateSpectral",
+              "colorSpace": "rgb",
+              "groupBy": 60,
+              "invertPalette": true,
+              "nullValueColor": "rgb(155, 155, 155)"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "currencyEUR"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 24,
+          "x": 0,
+          "y": 19
+        },
+        "id": 8,
+        "options": {
+          "from": "0",
+          "legendGradientQuality": "high",
+          "regions": [
+            {
+              "color": "#00000000",
+              "end": {
+                "hour": 24,
+                "minute": 0
+              },
+              "start": {
+                "hour": 20,
+                "minute": 30
+              }
+            }
+          ],
+          "showCellBorder": false,
+          "showLegend": true,
+          "showTooltip": true,
+          "showValueIndicator": false,
+          "timeFieldName": "Time",
+          "to": "0",
+          "valueFieldName": "Value"
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WGbJcwvVz"
+            },
+            "editorMode": "code",
+            "expr": "max(delta(energy_Electricity_incoming_tariff2_kwh[1h])) * ($Electricity_Normal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) + max(delta(energy_Electricity_incoming_tariff1_kwh[1h])) * ($Electricity_Dal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) +($Electricity_Delivery - $Energy_Tax_Reduction ) / 24",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "{{topic}}",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Electricity Usage HeatMap Per Hour",
+        "type": "marcusolsson-hourly-heatmap-panel"
+      },
+      {
+        "collapsed": true,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 28
+        },
+        "id": 12,
+        "panels": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                },
+                "unit": "currencyEUR"
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 9,
+              "w": 24,
+              "x": 0,
+              "y": 1
+            },
+            "id": 14,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "max(delta(energy_Gas_readings_0_Value_m3[1d])) * ($Gas_Rate + $Gas_Tax + $Gas_Tax_Surcharge) + ($Gas_Connection_Cost + $Gas_Delivery_Cost)",
+                "interval": "1d",
+                "legendFormat": "Gas_Cost",
+                "range": true,
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "max(delta(energy_Electricity_incoming_tariff2_kwh[1d])) * ($Electricity_Normal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) + max(delta(energy_Electricity_incoming_tariff1_kwh[1d])) * ($Electricity_Dal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) +($Electricity_Delivery - $Energy_Tax_Reduction )",
+                "hide": false,
+                "interval": "1d",
+                "legendFormat": "Electricity_Incoming_Cost",
+                "range": true,
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "(max(delta(energy_Electricity_outgoing_tariff1_kwh[1d])) + max(delta(energy_Electricity_outgoing_tariff2_kwh[1d]))) * $Electricity_Return ",
+                "hide": false,
+                "interval": "1d",
+                "legendFormat": "Electricity_Outgoing_Cost",
+                "range": true,
+                "refId": "C"
+              },
+              {
+                "datasource": {
+                  "name": "Expression",
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "$A + $B - $C",
+                "hide": false,
+                "refId": "D",
+                "type": "math"
+              }
+            ],
+            "title": "Daily Energy Costs",
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisCenteredZero": false,
+                  "axisColorMode": "text",
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 0,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 1,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "auto",
+                  "spanNulls": false,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                },
+                "unit": "short"
+              },
+              "overrides": []
+            },
+            "gridPos": {
+              "h": 9,
+              "w": 24,
+              "x": 0,
+              "y": 10
+            },
+            "id": 15,
+            "options": {
+              "legend": {
+                "calcs": [],
+                "displayMode": "list",
+                "placement": "bottom",
+                "showLegend": true
+              },
+              "tooltip": {
+                "mode": "single",
+                "sort": "none"
+              }
+            },
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "max(delta(energy_Gas_readings_0_Value_m3[1d])) * ($Gas_Rate + $Gas_Tax + $Gas_Tax_Surcharge) + ($Gas_Connection_Cost + $Gas_Delivery_Cost)",
+                "hide": true,
+                "interval": "1d",
+                "legendFormat": "Gas_Cost",
+                "range": true,
+                "refId": "A"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "max(delta(energy_Electricity_incoming_tariff2_kwh[1d])) * ($Electricity_Normal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) + max(delta(energy_Electricity_incoming_tariff1_kwh[1d])) * ($Electricity_Dal + $Electricity_Tax_Zone1 + $Electricity_Tax_Surcharge_Zone1) +($Electricity_Delivery - $Energy_Tax_Reduction )",
+                "hide": true,
+                "interval": "1d",
+                "legendFormat": "Electricity_Incoming_Cost",
+                "range": true,
+                "refId": "B"
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PBFA97CFB590B2093"
+                },
+                "editorMode": "code",
+                "expr": "(max(delta(energy_Electricity_outgoing_tariff1_kwh[1d])) + max(delta(energy_Electricity_outgoing_tariff2_kwh[1d]))) * $Electricity_Return ",
+                "hide": true,
+                "interval": "1d",
+                "legendFormat": "Electricity_Outgoing_Cost",
+                "range": true,
+                "refId": "C"
+              },
+              {
+                "datasource": {
+                  "name": "Expression",
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "$A / ($B - $C)",
+                "hide": false,
+                "refId": "D",
+                "type": "math"
+              }
+            ],
+            "title": "Gas vs Electricity Cost Factor",
+            "type": "timeseries"
+          }
+        ],
+        "title": "Daily",
+        "type": "row"
+      }
+    ],
+    "schemaVersion": 37,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "description": "Electricity Incoming Normal Rate in Euros per kWh",
+          "hide": 2,
+          "name": "Electricity_Normal",
+          "query": "@Electricity_Normal@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Electricity Incoming Dal Rate in Euros per kWh",
+          "hide": 2,
+          "name": "Electricity_Dal",
+          "query": "@Electricity_Dal@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Electricity Return Rate in Euros without BTW per kWh",
+          "hide": 2,
+          "name": "Electricity_Return",
+          "query": "@Electricity_Return@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Electricity Delivery costs in Eur per day",
+          "hide": 2,
+          "name": "Electricity_Delivery",
+          "query": "@Electricity_Delivery@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Tax on Electricity Zone1 in Euros per kWh",
+          "hide": 2,
+          "name": "Electricity_Tax_Zone1",
+          "query": "@Electricity_Tax_Zone1@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Tax Surcharge on Electricity Zone1 in Euros per kWh",
+          "hide": 2,
+          "name": "Electricity_Tax_Surcharge_Zone1",
+          "query": "@Electricity_Tax_Surcharge_Zone1@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Gas Rate in Euros per m3",
+          "hide": 2,
+          "name": "Gas_Rate",
+          "query": "@Gas_Rate@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Gas Delivery Cost in Euros per day",
+          "hide": 2,
+          "name": "Gas_Delivery_Cost",
+          "query": "@Gas_Delivery_Cost@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Gas Connection Cost in Euros per day",
+          "hide": 2,
+          "name": "Gas_Connection_Cost",
+          "query": "@Gas_Connection_Cost@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Gas Tax in Euros per m3",
+          "hide": 2,
+          "name": "Gas_Tax",
+          "query": "@Gas_Tax@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Gas Tax Surcharge in Euros per m3",
+          "hide": 2,
+          "name": "Gas_Tax_Surcharge",
+          "query": "@Gas_Tax_Surcharge@",
+          "skipUrlSync": false,
+          "type": "constant"
+        },
+        {
+          "description": "Energy Tax Reduction in Euros per day",
+          "hide": 2,
+          "name": "Energy_Tax_Reduction",
+          "query": "@Energy_Tax_Reduction@",
+          "skipUrlSync": false,
+          "type": "constant"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Energy",
+    "uid": "6U5txkOVk",
+    "version": 17,
+    "weekStart": ""
+  }

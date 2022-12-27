@@ -1,3 +1,6 @@
+# This Docker Compose only creates Smartmeter Reader and Sample MQTT Server.configs:
+# The setup assumes that you have already setup of tools that can read messages from MQTT.configs:
+# This is aimed at more advanced users.
 version: '3'
 services:
   smartmeter-reader:
@@ -16,7 +19,4 @@ services:
     image: eclipse-mosquitto:2
     ports:
       - 1883:1883
-      - 9001:9001   
-
-   
-# docker run -d -p 31883:1883 -p 39001:9001 --name mqtt-mtch -v {{ paths.data }}/mosquitto/config:/mosquitto/config -v {{ paths.data }}/mosquitto/data:/mosquitto/data -v {{ paths.data }}/mosquitto/log:/mosquitto/log eclipse-mosquitto
+      - 9001:9001

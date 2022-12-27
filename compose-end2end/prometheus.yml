@@ -1,0 +1,21 @@
+# my global config
+global:
+  scrape_interval: 60s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 60s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+# Read data from telegraf
+  - job_name: 'telegraph'
+    scrape_interval: 45s
+    scrape_timeout: 30s
+    static_configs:
+        - targets: ['telegraf:9211']
+    metrics_path: "/metrics"
+    basic_auth:
+      username: 'telegraf'
+      password: 'pwd_telegraf'

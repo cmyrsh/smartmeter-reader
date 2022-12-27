@@ -1,0 +1,67 @@
+version: '3'
+services:
+  smartmeter-reader:
+    container_name: smartmeter-reader
+    image: myrsh/smartmeter-reader
+    restart: unless-stopped
+    configs:
+      - source: smartmeter
+        target: /config/smartmeter-reader.yml
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    depends_on: 
+     - mosquitto
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    ports:
+      # - 1883:1883
+      - 9001:9001   
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    restart: unless-stopped
+    # volumes:
+      # Mount for prometheus data directory and configuration
+      # - {{ paths.data }}/prometheus/config:/etc/prometheus:rw
+      # - {{ paths.data }}/prometheus/data:/data/prometheus:z
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/data/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=48h"
+      - "--storage.tsdb.min-block-duration=12h"
+      - "--web.enable-lifecycle"
+    depends_on:
+      - telegraf
+  grafana:
+    container_name: 'grafana'
+    image: grafana/grafana-oss
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    configs:
+      - source: grafana_dashboard
+        target: /etc/grafana/provisioning/dashboards/grafana_dashboard.json
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,marcusolsson-hourly-heatmap-panel,petrslavotinek-carpetplot-panel,michaeldmoore-multistat-panel,snuids-radar-panel,marcusolsson-gantt-panel,natel-discrete-panel,neocat-cal-heatmap-panel
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/etc/grafana/provisioning/admin_password
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+  telegraf:
+      container_name: telegraf
+      image: telegraf
+      restart: unless-stopped
+      depends_on:
+        - mosquitto
+configs:
+  smartmeter:
+    file: ./smartmeter-reader.yml
+  telegraf:
+    file: ./telegraf.conf
+  prometheus:
+    file: ./prometheus.yml
+  grafana_dashboard:
+    file: ./dashboard_energy_final.json

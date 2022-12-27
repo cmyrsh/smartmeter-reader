@@ -1,0 +1,7 @@
+send_interval: 60 # Seconds
+debug: true
+usb: /dev/ttyUSB0
+mqtt:
+  address: "mosquitto:1883"
+  topic: "energy/smartmeter"
+  # credfile: ""
