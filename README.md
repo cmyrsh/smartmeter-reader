@@ -164,6 +164,7 @@ docker run --name smartmeter-reader --rm -v /path/to/config:/config --device "/d
 ```
 
 ## Using Docker Compose
+### Minimal
 
 Following Docker Compose will run local mqtt along with smartmeter-reader
 ```
@@ -186,3 +187,61 @@ services:
       - 1883:1883
       - 9001:9001  
 ```
+
+### End 2 End
+We use multiple containers to carry data from Smartmeter to Grafana.
+Using Grafana we can visualize the usage.
+
+```mermaid
+ flowchart LR
+    SmartMeter(P1 Port of Smart Meter)
+    Pi(RaspBerry Pi USB Port)
+    MQTT(MQTT Server)
+    SmartMeter -- P1Port to USB Cable --> Pi
+    Pi -- Json --> MQTT
+    Telegraf(Telegraf Agent) <-- Read and Convert --> MQTT
+    Prometheus -- Scrape --> Telegraf
+    Grafana -- Read Data from Prometheus --> Prometheus
+    User <--> Grafana
+```
+
+#### Energy Rates Config
+In order to see correct Costs, we need to prepare a config by correctly replacing values offered by your energy contract provider.
+```
+# Electricity Incoming Normal Rate in Euros per kWh
+Electricity_Normal=0.1
+# Electricity Incoming Dal Rate in Euros per kWh
+Electricity_Dal=0.1
+# Electricity Return Rate in Euros without BTW per kWh
+Electricity_Return=0.05
+# Electricity Delivery costs in Eur per day
+Electricity_Delivery=0.1
+# Tax on Electricity Zone1 in Euros per kWh
+Electricity_Tax_Zone1=0.1
+# Tax Surcharge on Electricity Zone1 in Euros per kWh
+Electricity_Tax_Surcharge_Zone1=0.01
+# Gas Rate in Euros per m3
+Gas_Rate=0.5
+# Gas Delivery Cost in Euros per day
+Gas_Delivery_Cost=0.5
+# Gas Connection Cost in Euros per day
+Gas_Connection_Cost=0.5
+# Gas Tax in Euros per m3
+Gas_Tax=0.1
+# Gas Tax Surcharge in Euros per m3
+Gas_Tax_Surcharge=0.05
+# Energy Tax Reduction in Euros per day
+Energy_Tax_Reduction=0.1
+```
+
+#### Steps
+On your Raspberry Pi which has already connected to Smart Meter using P1 Port to USB Cable..
+
+      -   Checkout Code
+      -   Cd into compose-end2end
+      -   Update values in file energy-rates.conf
+      -   run start.sh
+
+
+Once all containers start correctly, Login into Grafana on link http://raspberrypi:3000
+The default dashboard should show latest data from SmartMeter
